@@ -1,0 +1,60 @@
+version: '3.6'
+
+services:
+  nginx:
+    container_name: ${DOCKER_PROJECT_NAME}-nginx
+    build:
+      context: .deploy/Docker/etc
+      dockerfile: nginx.Dockerfile
+    ports:
+      - ${DOCKER_NGINX_PORT}:80
+    depends_on:
+      - php
+    networks:
+      - main
+    volumes:
+      - ./:/var/www:${DOCKER_FS_SHARING}
+      - ./var/log/nginx:/var/log/nginx
+
+  php:
+    container_name: ${DOCKER_PROJECT_NAME}-php
+    build:
+      context: .deploy/Docker/etc
+      dockerfile: php.Dockerfile
+    environment:
+      TIMEZONE: ${TIMEZONE}
+      XDEBUG_CONFIG: "idekey=${DOCKER_XDEBUG_IDEKEY}"
+      PHP_IDE_CONFIG: "serverName=_"
+      XDEBUG_REMOTE_HOST: ${DOCKER_XDEBUG_REMOTE_HOST}
+      XDEBUG_REMOTE_PORT: ${DOCKER_XDEBUG_REMOTE_PORT}
+      XDEBUG_IDEKEY: ${DOCKER_XDEBUG_IDEKEY}
+    networks:
+      - main
+    depends_on:
+      - postgres
+    volumes:
+      - ./:/var/www:${DOCKER_FS_SHARING}
+
+  postgres:
+    container_name: ${DOCKER_PROJECT_NAME}-postgres
+    build:
+      context: .deploy/Docker/etc
+      dockerfile: postgres.Dockerfile
+    environment:
+      TZ: ${TIMEZONE}
+      POSTGRES_PASSWORD: ${DOCKER_PROJECT_NAME}
+      POSTGRES_USER: ${DOCKER_PROJECT_NAME}
+      POSTGRES_DB: ${DOCKER_PROJECT_NAME}
+      PGDATA: /data/postgres
+    ports:
+      - ${DOCKER_POSTGRES_PORT}:3306
+    networks:
+      - main
+    volumes:
+      - db-data:/data/postgres
+
+networks:
+  main:
+
+volumes:
+  db-data:
