@@ -25,3 +25,10 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Service\RouletteServiceInterface: '@App\Service\RouletteService'
+
+    App\Repository\StatisticRepository:
+        class: App\Repository\StatisticRepository
+        arguments:
+           $connection: '@doctrine.dbal.default_connection'

@@ -47,7 +47,7 @@ services:
       POSTGRES_DB: ${DOCKER_PROJECT_NAME}
       PGDATA: /data/postgres
     ports:
-      - ${DOCKER_POSTGRES_PORT}:3306
+      - ${DOCKER_POSTGRES_PORT}:5432
     networks:
       - main
     volumes:
